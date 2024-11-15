@@ -634,6 +634,9 @@ enum EMaterialShadingModel : int
 	MSM_SingleLayerWater		UMETA(DisplayName="SingleLayerWater"),
 	MSM_ThinTranslucent			UMETA(DisplayName="Thin Translucent"),
 	MSM_Strata					UMETA(DisplayName="Substrate", Hidden),
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	MSM_Sketch					UMETA(DisplayName = "Sketch"),
+	//[Sketch-Pipeline][Add-End]
 	/** Number of unique shading models. */
 	MSM_NUM						UMETA(Hidden),
 	/** Shading model will be determined by the Material Expression Graph,

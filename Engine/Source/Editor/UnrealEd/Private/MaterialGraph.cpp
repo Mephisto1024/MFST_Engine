@@ -267,7 +267,10 @@ void UMaterialGraph::RebuildGraphInternal(const TMap<UMaterialExpression*, TArra
 
 		//^^^ New material properties go above here. ^^^^
 		MaterialInputs.Add(FMaterialInputInfo(LOCTEXT("MaterialAttributes", "Material Attributes"), MP_MaterialAttributes, LOCTEXT("MaterialAttributesToolTip", "Material Attributes")));
-
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		MaterialInputs.Add(FMaterialInputInfo(FMaterialAttributeDefinitionMap::GetDisplayNameForMaterial(MP_SketchShadowUVScale, Material), MP_SketchShadowUVScale, LOCTEXT("SketchShadowUVScaleTip", "Sketch Shadow UV Scale")));
+		MaterialInputs.Add(FMaterialInputInfo(FMaterialAttributeDefinitionMap::GetDisplayNameForMaterial(MP_SketchColorMixing, Material), MP_SketchColorMixing, LOCTEXT("SketchColorMixingTip", "Sketch Color Mixing")));
+		//[Sketch-Pipeline][Add-End]
 		// Add Root Node
 		{
 			FGraphNodeCreator<UMaterialGraphNode_Root> NodeCreator(*this);

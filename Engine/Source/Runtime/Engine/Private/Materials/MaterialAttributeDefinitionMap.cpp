@@ -301,6 +301,10 @@ void FMaterialAttributeDefinitionMap::InitializeAttributeMap()
 	AddCustomAttribute(FGuid(0xAA3D5C04, 0x16294716, 0xBBDEC869, 0x6A27DD72), "ClearCoatBottomNormal", "ClearCoatBottomNormal", MCT_Float3, FVector4(0, 0, 1, 0));
 	AddCustomAttribute(FGuid(0x8EAB2CB2, 0x73634A24, 0x8CD14F47, 0x3F9C8E55), "CustomEyeTangent", "GetTangentOutput", MCT_Float3, FVector4(0, 0, 0, 0));
 	AddCustomAttribute(FGuid(0xF2D8C70E, 0x42ECA0D1, 0x4652D0AD, 0xB785A065), "TransmittanceColor", "GetThinTranslucentMaterialOutput", MCT_Float3, FVector4(0.5, 0.5, 0.5, 0));
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	Add(FGuid(0x68934E1B, 0x1234567A, 0x1234567B, 0x1234567C), TEXT("SketchShadowUVScale"), MP_SketchShadowUVScale, MCT_Float, FVector4(0, 0, 0, 0), SF_Pixel);
+	Add(FGuid(0x68934E1B, 0x1234567D, 0x1234567E, 0x1234567F), TEXT("SketchColorMixing"), MP_SketchColorMixing, MCT_Float, FVector4(0, 0, 0, 0), SF_Pixel);
+	//[Sketch-Pipeline][Add-End]
 }
 
 void FMaterialAttributeDefinitionMap::Add(const FGuid& AttributeID, const FString& AttributeName, EMaterialProperty Property,
@@ -411,6 +415,12 @@ FText FMaterialAttributeDefinitionMap::GetAttributeOverrideForMaterial(const FGu
 		CustomPinNames.Add({ MSM_ClearCoat, "Clear Coat Roughness" });
 		CustomPinNames.Add({ MSM_Eye, "Iris Distance" });
 		return FText::FromString(GetPinNameFromShadingModelField(Material->GetShadingModels(), CustomPinNames, "Custom Data 1"));
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+	case MP_SketchShadowUVScale:
+		return LOCTEXT("SketchShadowUVScale", "Sketch Shadow UV Scale");
+	case MP_SketchColorMixing:
+		return LOCTEXT("SketchColorMixing", "Sketch Color Mixing");
+		//[Sketch-Pipeline][Add-End]
 	case MP_AmbientOcclusion:
 		return LOCTEXT("AmbientOcclusion", "Ambient Occlusion");
 	case MP_Refraction:

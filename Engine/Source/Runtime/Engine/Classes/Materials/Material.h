@@ -368,6 +368,14 @@ public:
 	UPROPERTY()
 	FScalarMaterialInput AmbientOcclusion;
 
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	UPROPERTY()
+	FScalarMaterialInput SketchShadowUVScale;
+
+	UPROPERTY()
+	FScalarMaterialInput SketchColorMixing;
+	//[Sketch-Pipeline][Add-End]
+	
 	/**
 	 * output refraction index for translucent rendering
 	 * Air:1.0 Water:1.333 Ice:1.3 Glass:~1.6 Diamond:2.42

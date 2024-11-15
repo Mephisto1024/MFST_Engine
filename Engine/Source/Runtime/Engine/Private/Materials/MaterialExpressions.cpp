@@ -6727,8 +6727,9 @@ int32 UMaterialExpressionMakeMaterialAttributes::Compile(class FMaterialCompiler
 {
 	int32 Ret = INDEX_NONE;
 	UMaterialExpression* Expression = nullptr;
-
- 	static_assert(MP_MAX == 35, 
+	//[Sketch-Pipeline][Modify-Begin]添加光照模型
+ 	static_assert(MP_MAX == 35+2,
+ 	//[Sketch-Pipeline][Modify-End]
 		"New material properties should be added to the end of the inputs for this expression. \
 		The order of properties here should match the material results pins, the make material attriubtes node inputs and the mapping of IO indices to properties in GetMaterialPropertyFromInputOutputIndex().\
 		Insertions into the middle of the properties or a change in the order of properties will also require that existing data is fixed up in DoMaterialAttributeReorder().\
@@ -6756,6 +6757,10 @@ int32 UMaterialExpressionMakeMaterialAttributes::Compile(class FMaterialCompiler
 	case MP_AmbientOcclusion: Ret = AmbientOcclusion.Compile(Compiler); Expression = AmbientOcclusion.Expression; break;
 	case MP_Refraction: Ret = Refraction.Compile(Compiler); Expression = Refraction.Expression; break;
 	case MP_PixelDepthOffset: Ret = PixelDepthOffset.Compile(Compiler); Expression = PixelDepthOffset.Expression; break;
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+	case MP_SketchShadowUVScale: Ret = Refraction.Compile(Compiler); Expression = SketchShadowUVScale.Expression; break;
+	case MP_SketchColorMixing: Ret = Refraction.Compile(Compiler); Expression = SketchColorMixing.Expression; break;
+		//[Sketch-Pipeline][Add-End]
 	case MP_ShadingModel: Ret = ShadingModel.Compile(Compiler); Expression = ShadingModel.Expression; break;
 	};
 
@@ -6814,8 +6819,8 @@ UMaterialExpressionBreakMaterialAttributes::UMaterialExpressionBreakMaterialAttr
 	bShowMaskColorsOnPin = false;
 
 	MenuCategories.Add(ConstructorStatics.NAME_MaterialAttributes);
-	
- 	static_assert(MP_MAX == 35, 
+	//[Sketch-Pipeline][Modify-Begin]添加光照模型
+ 	static_assert(MP_MAX == 35+2, 
 		"New material properties should be added to the end of the outputs for this expression. \
 		The order of properties here should match the material results pins, the make material attributes node inputs and the mapping of IO indices to properties in GetMaterialPropertyFromInputOutputIndex().\
 		Insertions into the middle of the properties or a change in the order of properties will also require that existing data is fixed up in DoMaterialAttributesReorder().\
@@ -6845,6 +6850,10 @@ UMaterialExpressionBreakMaterialAttributes::UMaterialExpressionBreakMaterialAttr
 	}
 
 	Outputs.Add(FExpressionOutput(TEXT("PixelDepthOffset"), 1, 1, 0, 0, 0));
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	Outputs.Add(FExpressionOutput(TEXT("SketchShadowUVScale"), 1, 1, 1, 1, 0));
+	Outputs.Add(FExpressionOutput(TEXT("SketchColorMixing"), 1, 1, 1, 1, 0));
+	//[Sketch-Pipeline][Add-End]
 	Outputs.Add(FExpressionOutput(TEXT("ShadingModel"), 0, 0, 0, 0, 0));
 	Outputs.Add(FExpressionOutput(TEXT("Displacement"), 1, 1, 0, 0, 0));
 #endif
@@ -6891,6 +6900,10 @@ void UMaterialExpressionBreakMaterialAttributes::Serialize(FStructuredArchive::F
 		}
 
 		Outputs[OutputIndex].SetMask(1, 1, 0, 0, 0); ++OutputIndex;// PixelDepthOffset
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // SketchShadowUVScale
+		Outputs[OutputIndex].SetMask(1, 1, 1, 1, 0); ++OutputIndex; // SketchColorMixing
+		//[Sketch-Pipeline][Add-End]
 		Outputs[OutputIndex].SetMask(0, 0, 0, 0, 0); // ShadingModelFromMaterialExpression
 	}
 #endif // WITH_EDITOR
@@ -6928,8 +6941,15 @@ void UMaterialExpressionBreakMaterialAttributes::BuildPropertyToIOIndexMap()
 		PropertyToIOIndexMap.Add(MP_CustomizedUVs6,			22);
 		PropertyToIOIndexMap.Add(MP_CustomizedUVs7,			23);
 		PropertyToIOIndexMap.Add(MP_PixelDepthOffset,		24);
-		PropertyToIOIndexMap.Add(MP_ShadingModel,			25);
-		PropertyToIOIndexMap.Add(MP_Displacement,			26);
+		//PropertyToIOIndexMap.Add(MP_ShadingModel,			25);
+		//PropertyToIOIndexMap.Add(MP_Displacement,			26);
+		
+		//[Sketch-Pipeline][Modify-Begin]添加光照模型
+		PropertyToIOIndexMap.Add(MP_SketchShadowUVScale, 25);
+		PropertyToIOIndexMap.Add(MP_SketchColorMixing, 26);
+		PropertyToIOIndexMap.Add(MP_ShadingModel, 27);
+		PropertyToIOIndexMap.Add(MP_Displacement, 28);
+		//[Sketch-Pipeline][Modify-End]
 	}
 }
 

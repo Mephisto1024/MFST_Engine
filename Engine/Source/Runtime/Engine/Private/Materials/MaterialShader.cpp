@@ -114,6 +114,9 @@ FString GetShadingModelString(EMaterialShadingModel ShadingModel)
 		case MSM_Eye:				ShadingModelName = TEXT("MSM_Eye"); break;
 		case MSM_SingleLayerWater:	ShadingModelName = TEXT("MSM_SingleLayerWater"); break;
 		case MSM_ThinTranslucent:	ShadingModelName = TEXT("MSM_ThinTranslucent"); break;
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+	case MSM_Sketch:			ShadingModelName = TEXT("MSM_Sketch"); break;
+		//[Sketch-Pipeline][Add-End]
 		default: ShadingModelName = TEXT("Unknown"); break;
 	}
 	return ShadingModelName;
@@ -246,7 +249,20 @@ void UpdateMaterialShaderCompilingStats(const FMaterial* Material)
 	{
 		INC_DWORD_STAT_BY(STAT_ShaderCompiling_NumUnlitMaterialShaders, 1);
 	}
-	else if (ShadingModels.HasAnyShadingModel({ MSM_DefaultLit, MSM_Subsurface, MSM_PreintegratedSkin, MSM_ClearCoat, MSM_Cloth, MSM_SubsurfaceProfile, MSM_TwoSidedFoliage, MSM_SingleLayerWater, MSM_ThinTranslucent }))
+	else if (ShadingModels.HasAnyShadingModel({
+		MSM_DefaultLit,
+		MSM_Subsurface,
+		MSM_PreintegratedSkin,
+		MSM_ClearCoat,
+		MSM_Cloth,
+		MSM_SubsurfaceProfile,
+		MSM_TwoSidedFoliage,
+		MSM_SingleLayerWater,
+		MSM_ThinTranslucent,
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		MSM_Sketch
+		//[Sketch-Pipeline][Add-End]
+	}))
 	{
 		INC_DWORD_STAT_BY(STAT_ShaderCompiling_NumLitMaterialShaders, 1);
 	}

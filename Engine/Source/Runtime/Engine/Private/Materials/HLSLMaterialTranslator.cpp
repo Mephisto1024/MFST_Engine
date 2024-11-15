@@ -408,6 +408,10 @@ FHLSLMaterialTranslator::FHLSLMaterialTranslator(FMaterial* InMaterial,
 	SharedPixelProperties[MP_Refraction] = true;
 	SharedPixelProperties[MP_PixelDepthOffset] = true;
 	SharedPixelProperties[MP_SubsurfaceColor] = true;
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	SharedPixelProperties[MP_SketchShadowUVScale] = true;
+	SharedPixelProperties[MP_SketchColorMixing] = true;
+	//[Sketch-Pipeline][Add-End]
 	SharedPixelProperties[MP_ShadingModel] = true;
 	SharedPixelProperties[MP_SurfaceThickness] = true;
 	SharedPixelProperties[MP_FrontMaterial] = true;
@@ -1052,7 +1056,10 @@ bool FHLSLMaterialTranslator::Translate()
 		Chunk[MP_OpacityMask]					= Material->CompilePropertyAndSetMaterialProperty(MP_OpacityMask			,this);
 		Chunk[MP_Tangent]						= Material->CompilePropertyAndSetMaterialProperty(MP_Tangent				,this);
 		Chunk[MP_WorldPositionOffset]			= Material->CompilePropertyAndSetMaterialProperty(MP_WorldPositionOffset	,this);
-
+			//[Sketch-Pipeline][Add-Begin]添加光照模型
+			Chunk[MP_SketchShadowUVScale] = Material->CompilePropertyAndSetMaterialProperty(MP_SketchShadowUVScale, this);
+			Chunk[MP_SketchColorMixing] = Material->CompilePropertyAndSetMaterialProperty(MP_SketchColorMixing, this);
+			//[Sketch-Pipeline][Add-End]
 		// Make sure to compile this property before using ShadingModelsFromCompilation
 		Chunk[MP_ShadingModel]					= Material->CompilePropertyAndSetMaterialProperty(MP_ShadingModel			,this);
 		
@@ -1101,7 +1108,10 @@ bool FHLSLMaterialTranslator::Translate()
 			Chunk[MP_CustomData0] = Material->CompilePropertyAndSetMaterialProperty(MP_CustomData0, this);
 			Chunk[MP_CustomData1] = Material->CompilePropertyAndSetMaterialProperty(MP_CustomData1, this);
 			Chunk[MP_AmbientOcclusion] = Material->CompilePropertyAndSetMaterialProperty(MP_AmbientOcclusion, this);
-
+			//[Sketch-Pipeline][Add-Begin]添加光照模型
+			Chunk[MP_SketchShadowUVScale] = Material->CompilePropertyAndSetMaterialProperty(MP_SketchShadowUVScale, this);
+			Chunk[MP_SketchColorMixing] = Material->CompilePropertyAndSetMaterialProperty(MP_SketchColorMixing, this);
+			//[Sketch-Pipeline][Add-End]
 			if (IsTranslucentBlendMode(BlendMode) || MaterialShadingModels.HasShadingModel(MSM_SingleLayerWater))
 			{
 				// Cast to exact match is needed for float parameter to be correctly cast to float2.
@@ -2209,7 +2219,13 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 
 			bMaterialRequestsDualSourceBlending = true;
 		}
-
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		if (ShadingModels.HasShadingModel(MSM_Sketch))
+		{
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_SKETCH"), TEXT("1"));
+			NumSetMaterials++;
+		}
+		//[Sketch-Pipeline][Add-End]
 		if (ShadingModels.HasShadingModel(MSM_SingleLayerWater) && FDataDrivenShaderPlatformInfo::GetRequiresDisableForwardLocalLights(Platform))
 		{
 			OutEnvironment.SetDefine(TEXT("DISABLE_FORWARD_LOCAL_LIGHTS"), TEXT("1"));

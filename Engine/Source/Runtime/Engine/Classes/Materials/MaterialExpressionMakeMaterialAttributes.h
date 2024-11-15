@@ -68,6 +68,14 @@ class UMaterialExpressionMakeMaterialAttributes : public UMaterialExpression
 	UPROPERTY()
 	FExpressionInput PixelDepthOffset;
 
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	UPROPERTY()
+	FExpressionInput SketchShadowUVScale;
+
+	UPROPERTY()
+	FExpressionInput SketchColorMixing;
+	//[Sketch-Pipeline][Add-End]
+	
 	UPROPERTY()
 	FExpressionInput ShadingModel;
 

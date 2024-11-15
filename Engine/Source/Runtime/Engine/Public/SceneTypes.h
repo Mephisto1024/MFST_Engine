@@ -193,6 +193,11 @@ enum EMaterialProperty : int
 	MP_SurfaceThickness UMETA(Hidden),
 	MP_Displacement UMETA(Hidden),
 
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	MP_SketchShadowUVScale UMETA(DisplayName = "Sketch Shadow UV Scale"),
+	MP_SketchColorMixing UMETA(DisplayName = "Sketch Color Mixing"),
+	//[Sketch-Pipeline][Add-End]
+	
 	//^^^ New material properties go above here ^^^^
 	MP_MaterialAttributes UMETA(Hidden),
 	MP_CustomOutput UMETA(Hidden),
