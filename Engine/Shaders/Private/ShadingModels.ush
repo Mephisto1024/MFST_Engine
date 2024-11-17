@@ -340,6 +340,13 @@ FDirectLighting DefaultLitBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L,
 	return Lighting;
 }
 
+//[Sketch-Pipeline][Add-Begin]添加光照模型
+FDirectLighting SketchBxDF(FGBufferData GBuffer, half3 N, half3 V, half3 L, float Falloff, half NoL, FAreaLight AreaLight, FShadowTerms Shadow)
+{
+	return DefaultLitBxDF(GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow);
+}
+//[Sketch-Pipeline][Add-End]
+
 // Simple default lit model used by Lumen
 float3 SimpleShading( float3 DiffuseColor, float3 SpecularColor, float Roughness, float3 L, float3 V, half3 N )
 {
@@ -982,6 +989,10 @@ FDirectLighting IntegrateBxDF( FGBufferData GBuffer, half3 N, half3 V, half3 L, 
 			return ClothBxDF( GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow );
 		case SHADINGMODELID_EYE:
 			return EyeBxDF( GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow );
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		case SHADINGMODELID_SKETCH:
+		return SketchBxDF(GBuffer, N, V, L, Falloff, NoL, AreaLight, Shadow);
+		//[Sketch-Pipeline][Add-End]
 		default:
 			return (FDirectLighting)0;
 	}

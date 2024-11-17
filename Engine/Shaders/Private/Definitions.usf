@@ -264,6 +264,12 @@
 #define STRATA_USE_FULLYSIMPLIFIED_MATERIAL				0
 #endif
 
+//[Sketch-Pipeline][Add-Begin]添加光照模型
+#ifndef MATERIAL_SHADINGMODEL_SKETCH
+#define MATERIAL_SHADINGMODEL_SKETCH				0
+#endif
+//[Sketch-Pipeline][Add-End]
+
 // Those define usage should match the meaning of EStrataMaterialExport enum from MaterialCompiler.h
 #define STRATA_MATERIAL_EXPORT_DIFFUSE_COLOR				1
 #define STRATA_MATERIAL_EXPORT_NORMAL						2

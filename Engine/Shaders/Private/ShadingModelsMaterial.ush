@@ -21,6 +21,10 @@ void SetGBufferForShadingModel(
 	const float3 SubsurfaceColor,
 	const float SubsurfaceProfile,
 	const float Dither,
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	const float SketchShadowUVScale,
+	const float SketchColorMixing,
+	//[Sketch-Pipeline][Add-End]
 	const uint ShadingModel)
 {
 	GBuffer.WorldNormal = MaterialParameters.WorldNormal;

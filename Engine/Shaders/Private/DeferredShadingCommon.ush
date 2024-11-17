@@ -317,7 +317,10 @@ bool HasCustomGBufferData(int ShadingModelID)
 		|| ShadingModelID == SHADINGMODELID_TWOSIDED_FOLIAGE
 		|| ShadingModelID == SHADINGMODELID_HAIR
 		|| ShadingModelID == SHADINGMODELID_CLOTH
-		|| ShadingModelID == SHADINGMODELID_EYE;
+		|| ShadingModelID == SHADINGMODELID_EYE
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		|| ShadingModelID == SHADINGMODELID_SKETCH;
+		//[Sketch-Pipeline][Add-End]
 }
 
 bool HasAnisotropy(int SelectiveOutputMask)

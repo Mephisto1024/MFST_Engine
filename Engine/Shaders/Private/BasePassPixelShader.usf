@@ -875,6 +875,12 @@ void FPixelShaderInOut_MainPS(
 	float3 SubsurfaceColor = 0;
 	// 0..1, SubsurfaceProfileId = int(x * 255)
 	float SubsurfaceProfile = 0;
+
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+	float SketchShadowUVScale = GetMaterialSketchShadowUVScaleParm(PixelMaterialInputs);
+	float SketchColorMixing = GetMaterialSketchColorMixingParm(PixelMaterialInputs);
+	//[Sketch-Pipeline][Add-End]
+	
 #if !STRATA_ENABLED
 #if MATERIAL_SHADINGMODEL_SUBSURFACE || MATERIAL_SHADINGMODEL_PREINTEGRATED_SKIN || MATERIAL_SHADINGMODEL_SUBSURFACE_PROFILE || MATERIAL_SHADINGMODEL_TWOSIDED_FOLIAGE || MATERIAL_SHADINGMODEL_CLOTH || MATERIAL_SHADINGMODEL_EYE
 	if (ShadingModel == SHADINGMODELID_SUBSURFACE || ShadingModel == SHADINGMODELID_PREINTEGRATED_SKIN || ShadingModel == SHADINGMODELID_SUBSURFACE_PROFILE || ShadingModel == SHADINGMODELID_TWOSIDED_FOLIAGE || ShadingModel == SHADINGMODELID_CLOTH || ShadingModel == SHADINGMODELID_EYE)
@@ -1004,6 +1010,10 @@ void FPixelShaderInOut_MainPS(
 		SubsurfaceColor,
 		SubsurfaceProfile,
 		Dither,
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		SketchShadowUVScale,
+		SketchColorMixing,
+		//[Sketch-Pipeline][Add-End]
 		ShadingModel
 		);
 #endif // !STRATA_ENABLED

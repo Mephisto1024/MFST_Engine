@@ -3079,6 +3079,18 @@ half4 GetMaterialSubsurfaceData(FPixelMaterialInputs PixelMaterialInputs)
 	return OutSubsurface;
 }
 
+//[Sketch-Pipeline][Add-Begin]添加光照模型
+half GetMaterialSketchShadowUVScaleParm(FPixelMaterialInputs PixelMaterialInputs)
+{
+	return PixelMaterialInputs.SketchShadowUVScale;
+}
+
+half GetMaterialSketchColorMixingParm(FPixelMaterialInputs PixelMaterialInputs)
+{
+	return saturate(PixelMaterialInputs.SketchColorMixing);
+}
+//[Sketch-Pipeline][Add-End]
+
 half GetMaterialCustomData0(in out FMaterialPixelParameters Parameters)
 {
 %s;
