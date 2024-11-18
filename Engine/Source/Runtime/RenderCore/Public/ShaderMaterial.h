@@ -107,6 +107,10 @@ struct FShaderMaterialPropertyDefines
 	//[Sketch-Pipeline][Add-Begin]添加光照模型
 	uint8 MATERIAL_SHADINGMODEL_SKETCH : 1;
 	//[Sketch-Pipeline][Add-End]
+
+	//[CelToon-Pipeline][Add-Begin]添加光照模型
+	uint8 MATERIAL_SHADINGMODEL_CELTOON : 1;
+	//[CelToon-Pipeline][Add-End]
 	
 	uint8 TRANSLUCENCY_LIGHTING_VOLUMETRIC_NONDIRECTIONAL : 1;
 	uint8 TRANSLUCENCY_LIGHTING_VOLUMETRIC_DIRECTIONAL : 1;

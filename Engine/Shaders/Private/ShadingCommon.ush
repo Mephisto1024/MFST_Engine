@@ -33,11 +33,12 @@
 //#define SHADINGMODELID_NUM					13
 //#define SHADINGMODELID_MASK					0xF		// 4 bits reserved for ShadingModelID			
 
-//[Sketch-Pipeline][Modify-Begin]添加光照模型
-#define SHADINGMODELID_SKETCH				14
+//[Sketch-Pipeline,CelToon-Pipeline][Modify-Begin]添加光照模型
+#define SHADINGMODELID_SKETCH				13
+#define SHADINGMODELID_CELTOON				14
 #define SHADINGMODELID_NUM					15
 #define SHADINGMODELID_MASK					0xF		// 4 bits reserved for ShadingModelID	
-//[Sketch-Pipeline][Modify-End]		
+//[Sketch-Pipeline,CelToon-Pipeline][Modify-End]		
 
 // The flags are defined so that 0 value has no effect!
 // These occupy the 4 high bits in the same channel as the SHADINGMODELID_*
@@ -71,6 +72,11 @@ float3 GetShadingModelColor(uint ShadingModelID)
 	//[Sketch-Pipeline][Add-Begin]添加光照模型
 	else if (ShadingModelID == SHADINGMODELID_SKETCH) return float3(0.5f, 0.0f, 0.5f);
 	//[Sketch-Pipeline][Add-End]
+
+	//[CelToon-Pipeline][Add-Begin]添加光照模型
+	else if (ShadingModelID == SHADINGMODELID_CELTOON) return float3(0.6f, 0.0f, 0.5f);
+	//[CelToon-Pipeline][Add-End]
+	
 	else return float3(1.0f, 1.0f, 1.0f); // White
 #else
 	switch(ShadingModelID)
@@ -89,8 +95,13 @@ float3 GetShadingModelColor(uint ShadingModelID)
 		case SHADINGMODELID_THIN_TRANSLUCENT: return float3(1.0f, 0.8f, 0.3f);
 		case SHADINGMODELID_STRATA: return float3(1.0f, 1.0f, 0.0f);
 		//[Sketch-Pipeline][Add-Begin]添加光照模型
-		case SHADINGMODELID_SKETCH: return float3(0.5f, 0.0f, 0.5f);
+		case SHADINGMODELID_SKETCH: return float3(0.7f, 0.0f, 0.7f);
 		//[Sketch-Pipeline][Add-End]
+
+		//[CelToon-Pipeline][Add-Begin]添加光照模型
+		case SHADINGMODELID_CELTOON: return float3(0.5f, 0.5f, 0.7f);
+		//[CelToon-Pipeline][Add-End]
+		
 		default: return float3(1.0f, 1.0f, 1.0f); // White
 	}
 #endif

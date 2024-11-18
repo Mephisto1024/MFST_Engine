@@ -2219,13 +2219,7 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 
 			bMaterialRequestsDualSourceBlending = true;
 		}
-		//[Sketch-Pipeline][Add-Begin]添加光照模型
-		if (ShadingModels.HasShadingModel(MSM_Sketch))
-		{
-			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_SKETCH"), TEXT("1"));
-			NumSetMaterials++;
-		}
-		//[Sketch-Pipeline][Add-End]
+		
 		if (ShadingModels.HasShadingModel(MSM_SingleLayerWater) && FDataDrivenShaderPlatformInfo::GetRequiresDisableForwardLocalLights(Platform))
 		{
 			OutEnvironment.SetDefine(TEXT("DISABLE_FORWARD_LOCAL_LIGHTS"), TEXT("1"));
@@ -2245,7 +2239,23 @@ void FHLSLMaterialTranslator::GetMaterialEnvironment(EShaderPlatform InPlatform,
 		{
 			OutEnvironment.SetDefine(TEXT("SINGLE_LAYER_WATER_SEPARATED_MAIN_LIGHT"), TEXT("1"));
 		}
+		
+		//[Sketch-Pipeline][Add-Begin]添加光照模型
+		if (ShadingModels.HasShadingModel(MSM_Sketch))
+		{
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_SKETCH"), TEXT("1"));
+			NumSetMaterials++;
+		}
+		//[Sketch-Pipeline][Add-End]
 
+		//[CelToon-Pipeline][Add-Begin]添加光照模型
+		if (ShadingModels.HasShadingModel(MSM_CelToon))
+		{
+			OutEnvironment.SetDefine(TEXT("MATERIAL_SHADINGMODEL_CELTOON"), TEXT("1"));
+			NumSetMaterials++;
+		}
+		//[CelToon-Pipeline][Add-End]
+		
 		if (NumSetMaterials == 1)
 		{
 			OutEnvironment.SetDefine(TEXT("MATERIAL_SINGLE_SHADINGMODEL"), TEXT("1"));

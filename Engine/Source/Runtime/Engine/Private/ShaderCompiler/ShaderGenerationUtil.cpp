@@ -141,9 +141,15 @@ void FShaderCompileUtilities::ApplyFetchEnvironment(FShaderMaterialPropertyDefin
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_EYE);
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_SINGLELAYERWATER);
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_THIN_TRANSLUCENT);
+	
 	//[Sketch-Pipeline][Add-Begin]添加光照模型
 	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_SKETCH);
 	//[Sketch-Pipeline][Add-End]
+
+	//[CelToon-Pipeline][Add-Begin]添加光照模型
+	FETCH_COMPILE_BOOL(MATERIAL_SHADINGMODEL_CELTOON);
+	//[CelToon-Pipeline][Add-End]
+	
 	FETCH_COMPILE_BOOL(SINGLE_LAYER_WATER_SEPARATED_MAIN_LIGHT);
 
 	FETCH_COMPILE_BOOL(MATERIAL_FULLY_ROUGH);
@@ -1791,6 +1797,20 @@ static void DetermineUsedMaterialSlots(
 		}
 	}
 
+	//[Sketch-Pipeline][Add-Begin]添加着色模型
+	if (Mat.MATERIAL_SHADINGMODEL_SKETCH)
+	{
+		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
+	}
+	//[Sketch-Pipeline][Add-End]
+
+	//[CelToon-Pipeline][Add-Begin]添加着色模型
+	if (Mat.MATERIAL_SHADINGMODEL_CELTOON)
+	{
+		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
+	}
+	//[CelToon-Pipeline][Add-End]
+	
 	// doesn't write to GBuffer
 	if (Mat.MATERIAL_SHADINGMODEL_THIN_TRANSLUCENT)
 	{
