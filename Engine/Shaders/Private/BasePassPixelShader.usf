@@ -856,7 +856,11 @@ void FPixelShaderInOut_MainPS(
 
 	float Roughness = GetMaterialRoughness(PixelMaterialInputs);
 	float Anisotropy = GetMaterialAnisotropy(PixelMaterialInputs);
+#if MATERIAL_SHADINGMODEL_SKETCH
+	uint ShadingModel = SHADINGMODELID_SKETCH;
+#else
 	uint ShadingModel = GetMaterialShadingModel(PixelMaterialInputs);
+#endif
 	half Opacity = GetMaterialOpacity(PixelMaterialInputs);
 #else
 	half3 BaseColor = 0;

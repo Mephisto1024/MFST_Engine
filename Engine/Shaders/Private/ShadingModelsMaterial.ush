@@ -205,4 +205,12 @@ void SetGBufferForShadingModel(
 	#endif
 	}
 #endif
+	//[Sketch-Pipeline][Add-Begin]添加光照模型
+#if MATERIAL_SHADINGMODEL_SKETCH
+	else if (ShadingModel == SHADINGMODELID_SKETCH)
+	{
+		GBuffer.ShadingModelID = SHADINGMODELID_SKETCH;
+	}
+#endif
+	//[Sketch-Pipeline][Add-End]
 }
