@@ -16,6 +16,11 @@ BEGIN_SHADER_PARAMETER_STRUCT(FSceneTextureParameters, )
 	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, GBufferDTexture)
 	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, GBufferETexture)
 	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, GBufferFTexture)
+
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, GBufferGTexture)
+	//[Sketch-Pipeline][Add-End]
+
 	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, GBufferVelocityTexture)
 END_SHADER_PARAMETER_STRUCT()
 

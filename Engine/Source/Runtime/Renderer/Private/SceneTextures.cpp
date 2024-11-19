@@ -585,6 +585,14 @@ void FSceneTextures::InitializeViewFamily(FRDGBuilder& GraphBuilder, FViewFamily
 			const FRDGTextureDesc Desc = FRDGTextureDesc::Create2D(Config.Extent, GBufferFPixelFormat, FClearValueBinding({ 0.5f, 0.5f, 0.5f, 0.5f }), GBufferFCreateFlags | FlagsToAdd);
 			SceneTextures.GBufferF = GraphBuilder.CreateTexture(Desc, TEXT("GBufferF"));
 		}
+
+		//[Sketch-Pipeline][Add-Begin]修改GBuffer
+		if (Bindings.GBufferG.Index >= 0)
+		{
+			const FRDGTextureDesc Desc(FRDGTextureDesc::Create2D(Config.Extent, Bindings.GBufferG.Format, FClearValueBinding::Transparent, Bindings.GBufferG.Flags | FlagsToAdd | GFastVRamConfig.GBufferG));
+			SceneTextures.GBufferG = GraphBuilder.CreateTexture(Desc, TEXT("GBufferG"));
+		}
+		//[Sketch-Pipeline][Add-End]
 	}
 
 
@@ -673,6 +681,11 @@ uint32 FSceneTextures::GetGBufferRenderTargets(
 			{ TEXT("GBufferC"), GBufferC, Bindings.GBufferC.Index },
 			{ TEXT("GBufferD"), GBufferD, Bindings.GBufferD.Index },
 			{ TEXT("GBufferE"), GBufferE, Bindings.GBufferE.Index },
+
+			//[Sketch-Pipeline][Add-Begin]修改GBuffer
+			{ TEXT("GBufferG"), GBufferG, Bindings.GBufferG.Index },
+			//[Sketch-Pipeline][Add-End]
+			
 			{ TEXT("Velocity"), Velocity, Bindings.GBufferVelocity.Index }
 		};
 
@@ -794,6 +807,11 @@ FRDGTextureRef GetSceneTexture(const FSceneTextures& SceneTextures, ESceneTextur
 	case ESceneTexture::GBufferD:       return SceneTextures.GBufferD;
 	case ESceneTexture::GBufferE:       return SceneTextures.GBufferE;
 	case ESceneTexture::GBufferF:       return SceneTextures.GBufferF;
+		
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	case ESceneTexture::GBufferG:       return SceneTextures.GBufferG;
+	//[Sketch-Pipeline][Add-End]
+		
 	case ESceneTexture::SSAO:           return SceneTextures.ScreenSpaceAO;
 	case ESceneTexture::CustomDepth:	return SceneTextures.CustomDepth.Depth;
 	default:
@@ -821,6 +839,11 @@ void SetupSceneTextureUniformParameters(
 	SceneTextureParameters.GBufferDTexture = SystemTextures.Black;
 	SceneTextureParameters.GBufferETexture = SystemTextures.Black;
 	SceneTextureParameters.GBufferFTexture = SystemTextures.MidGrey;
+
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	SceneTextureParameters.GBufferGTexture = SystemTextures.Black;
+	//[Sketch-Pipeline][Add-End]
+	
 	SceneTextureParameters.GBufferVelocityTexture = SystemTextures.Black;
 	SceneTextureParameters.ScreenSpaceAOTexture = GetScreenSpaceAOFallback(SystemTextures);
 	SceneTextureParameters.CustomDepthTexture = SystemTextures.DepthDummy;
@@ -872,6 +895,13 @@ void SetupSceneTextureUniformParameters(
 			{
 				SceneTextureParameters.GBufferFTexture = SceneTextures->GBufferF;
 			}
+
+			//[Sketch-Pipeline][Add-Begin]修改GBuffer
+			if (EnumHasAnyFlags(SetupMode, ESceneTextureSetupMode::GBufferG) && HasBeenProduced(SceneTextures->GBufferG))
+			{
+				SceneTextureParameters.GBufferGTexture = SceneTextures->GBufferG;
+			}
+			//[Sketch-Pipeline]
 		}
 
 		if (EnumHasAnyFlags(SetupMode, ESceneTextureSetupMode::SceneVelocity) && HasBeenProduced(SceneTextures->Velocity))

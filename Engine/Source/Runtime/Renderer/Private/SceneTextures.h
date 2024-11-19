@@ -77,6 +77,10 @@ struct FSceneTextures : public FMinimalSceneTextures
 	FRDGTextureRef GBufferE{};
 	FRDGTextureRef GBufferF{};
 
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	FRDGTextureRef GBufferG{};
+	//[Sketch-Pipeline][Add-End]
+	
 	// Additional Buffer texture used by mobile
 	FRDGTextureMSAA DepthAux{};
 

@@ -460,6 +460,12 @@ static FString GetSlotTextName(EGBufferSlot Slot)
 		return TEXT("IrisNormal");
 	case GBS_SeparatedMainDirLight:
 		return TEXT("SeparatedMainDirLight");
+
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	case GBS_SketchData:
+		return TEXT("SketchData");
+	//[Sketch-Pipeline][Add-End]
+		
 	default:
 		break;
 	};
@@ -1797,18 +1803,20 @@ static void DetermineUsedMaterialSlots(
 		}
 	}
 
-	//[Sketch-Pipeline][Add-Begin]添加着色模型
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
 	if (Mat.MATERIAL_SHADINGMODEL_SKETCH)
 	{
 		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
+		Slots[GBS_CustomData] = bUseCustomData;
+		Slots[GBS_SketchData] = bUseCustomData;
 	}
 	//[Sketch-Pipeline][Add-End]
 
-	//[CelToon-Pipeline][Add-Begin]添加着色模型
-	if (Mat.MATERIAL_SHADINGMODEL_CELTOON)
+	//[CelToon-Pipeline][Add-Begin]
+	/*if (Mat.MATERIAL_SHADINGMODEL_CELTOON)
 	{
 		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
-	}
+	}*/
 	//[CelToon-Pipeline][Add-End]
 	
 	// doesn't write to GBuffer

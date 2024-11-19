@@ -23,6 +23,11 @@ enum class ESceneTexture
 	GBufferD,
 	GBufferE,
 	GBufferF,
+
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	GBufferG,
+	//[Sketch-Pipeline][Add-End]
+	
 	SSAO,
 	CustomDepth,
 };
@@ -41,9 +46,13 @@ enum class ESceneTextureSetupMode : uint32
 	GBufferD		= 1 << 6,
 	GBufferE		= 1 << 7,
 	GBufferF		= 1 << 8,
-	SSAO			= 1 << 9,
-	CustomDepth		= 1 << 10,
-	GBuffers		= GBufferA | GBufferB | GBufferC | GBufferD | GBufferE | GBufferF,
+
+	//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+	GBufferG = 1 << 9,
+	SSAO = 1 << 10,
+	CustomDepth = 1 << 11,
+	GBuffers = GBufferA | GBufferB | GBufferC | GBufferD | GBufferE | GBufferF | GBufferG,
+	//[Sketch-Pipeline][Modify-End]
 	All				= SceneColor | SceneDepth | SceneVelocity | GBuffers | SSAO | CustomDepth
 };
 ENUM_CLASS_FLAGS(ESceneTextureSetupMode);

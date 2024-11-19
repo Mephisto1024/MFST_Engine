@@ -2739,6 +2739,11 @@ struct FFastVramConfig
 	ETextureCreateFlags GBufferD;
 	ETextureCreateFlags GBufferE;
 	ETextureCreateFlags GBufferF;
+
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	ETextureCreateFlags GBufferG;
+	//[Sketch-Pipeline][Add-End]
+	
 	ETextureCreateFlags GBufferVelocity;
 	ETextureCreateFlags HZB;
 	ETextureCreateFlags SceneDepth;
