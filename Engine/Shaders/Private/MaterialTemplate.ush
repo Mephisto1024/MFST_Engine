@@ -73,6 +73,10 @@
 #define PPI_WorldTangent 29
 #define PPI_Anisotropy 30
 
+//[Sketch-Pipeline][Add-Begin]修改GBuffer
+#define PPI_SketchData 31
+//[Sketch-Pipeline][Add-End]
+
 //////////////////////////////////////////////////////////////////////////
 
 #define NUM_MATERIAL_TEXCOORDS_VERTEX %s
@@ -2593,6 +2597,10 @@ float4 SceneTextureLookup(float2 UV, int SceneTextureIndex, bool bFiltered)
 			case PPI_StoredSpecular:		return float4(ScreenSpaceData.GBuffer.StoredSpecular.rrr, 0);
 			case PPI_WorldTangent:			return float4(ScreenSpaceData.GBuffer.WorldTangent, 0);
 			case PPI_Anisotropy:			return ScreenSpaceData.GBuffer.Anisotropy;
+
+			//[Sketch-Pipeline][Add-Begin]修改GBuffer
+			case PPI_SketchData:			return ScreenSpaceData.GBuffer.SketchData;
+			//[Sketch-Pipeline][Add-End]
 		}
 	}
 	#endif // STRATA_ENABLED

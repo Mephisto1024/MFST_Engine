@@ -2062,7 +2062,9 @@ struct FPixelShaderIn
 struct FPixelShaderOut
 {
 	// [0..7], only usable if PIXELSHADEROUTPUT_MRT0, PIXELSHADEROUTPUT_MRT1, ... is 1
-	float4 MRT[8];
+	//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+	float4 MRT[8 + 1];
+	//[Sketch-Pipeline][Modify-End]
 	
 	// Explicit uint output specific to strata.
 	uint StrataOutput[3];

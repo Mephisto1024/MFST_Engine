@@ -122,15 +122,21 @@ void DecalCommonOutput(inout FPixelShaderIn In, inout FPixelShaderOut Out, float
 	float4 OutTarget5 = 0;
 	float4 OutTarget6 = 0;
 
-	#if DECAL_RENDERTARGETMODE == DECAL_RENDERTARGETMODE_GBUFFER
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	float4 OutTarget7 = 0;
+	//[Sketch-Pipeline][Add-End]
+	
+	//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+#if DECAL_RENDERTARGETMODE == DECAL_RENDERTARGETMODE_GBUFFER
 	{
-		EncodeGBuffer(Data, Out.MRT[1], Out.MRT[2], Out.MRT[3], OutTarget4, OutTarget5, OutTarget6);
+		EncodeGBuffer(Data, Out.MRT[1], Out.MRT[2], Out.MRT[3], OutTarget4, OutTarget5, OutTarget6, OutTarget7);
 	}
-	#elif DECAL_RENDERTARGETMODE == DECAL_RENDERTARGETMODE_GBUFFER_NONORMAL
+#elif DECAL_RENDERTARGETMODE == DECAL_RENDERTARGETMODE_GBUFFER_NONORMAL
 	{
-		EncodeGBuffer(Data, OutTarget1, Out.MRT[1], Out.MRT[2], OutTarget4, OutTarget5, OutTarget6);
+		EncodeGBuffer(Data, OutTarget1, Out.MRT[1], Out.MRT[2], OutTarget4, OutTarget5, OutTarget6, OutTarget7);
 	}
-	#endif // DECAL_RENDERTARGETMODE
+#endif // DECAL_RENDERTARGETMODE
+	//[Sketch-Pipeline][Modify-End]
 
 	#if MATERIALBLENDING_MODULATE
 		// BaseColor MRT location changes for render target mode.

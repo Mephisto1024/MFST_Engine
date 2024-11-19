@@ -277,13 +277,22 @@ FSSDCompressedSceneInfos SampleCompressedSceneMetadata(
 		float4 GBufferD = 0.0;
 		float4 GBufferE = 0.0;
 		float4 GBufferF = 0.5f;
+		//[Sketch-Pipeline][Add-Begin]修改GBuffer
+		float4 GBufferG = 0.0;
+		//[Sketch-Pipeline][Add-End]
 		float4 GBufferVelocity = 0.0;
 
 		bool bGetNormalizedNormal = false;
 
-		GBufferData = DecodeGBufferData(
+		/*GBufferData = DecodeGBufferData(
 			GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferVelocity,
+			CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromSceneColorUV(BufferUV));*/
+
+		//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+		GBufferData = DecodeGBufferData(
+			GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF,GBufferG, GBufferVelocity,
 			CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromSceneColorUV(BufferUV));
+		//[Sketch-Pipeline][Modify-End]
 	}
 	else
 	{

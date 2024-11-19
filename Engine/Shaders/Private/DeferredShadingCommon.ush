@@ -35,6 +35,11 @@ Texture2D GBufferDTexture;
 Texture2D GBufferETexture;
 Texture2D GBufferVelocityTexture;
 Texture2D GBufferFTexture;
+
+//[Sketch-Pipeline][Add-Begin]修改GBuffer
+Texture2D GBufferGTexture;
+//[Sketch-Pipeline][Add-End]
+
 Texture2D<uint> SceneLightingChannels;
 
 #define SceneDepthTextureSampler GlobalPointClampedSampler
@@ -44,6 +49,9 @@ Texture2D<uint> SceneLightingChannels;
 #define GBufferDTextureSampler GlobalPointClampedSampler
 #define GBufferETextureSampler GlobalPointClampedSampler
 #define GBufferFTextureSampler GlobalPointClampedSampler
+//[Sketch-Pipeline][Add-Begin]修改GBuffer
+#define GBufferGTextureSampler GlobalPointClampedSampler
+//[Sketch-Pipeline][Add-End]
 #define GBufferVelocityTextureSampler GlobalPointClampedSampler
 
 float SampleDeviceZFromSceneTextures(float2 UV)
@@ -385,6 +393,10 @@ struct FGBufferData
 	// 0..1, only needed by SHADINGMODELID_EYE which encodes Iris Distance inside Metallic
 	half StoredMetallic;
 
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	half4 SketchData;
+	//[Sketch-Pipeline][Add-End]
+	
 	// Curvature for mobile subsurface profile
 	half Curvature;
 };
@@ -832,6 +844,9 @@ void EncodeGBuffer(
 	out float4 OutGBufferC,
 	out float4 OutGBufferD,
 	out float4 OutGBufferE,
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	out float4 OutGBufferG,
+	//[Sketch-Pipeline][Add-End]
 	out float4 OutGBufferVelocity,
 	float QuantizationBias = 0		// -0.5 to 0.5 random float. Used to bias quantization.
 	)
@@ -882,6 +897,10 @@ void EncodeGBuffer(
 
 		OutGBufferD = GBuffer.CustomData;
 		OutGBufferE = GBuffer.PrecomputedShadowFactors;
+
+		//[Sketch-Pipeline][Add-Begin]修改GBuffer
+		OutGBufferG = GBuffer.SketchData;
+		//[Sketch-Pipeline][Add-End]
 	}
 
 #if WRITES_VELOCITY_TO_GBUFFER
@@ -933,6 +952,9 @@ FGBufferData DecodeGBufferData(
 	float4 InGBufferD,
 	float4 InGBufferE,
 	float4 InGBufferF,
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	float4 InGBufferG,
+	//[Sketch-Pipeline][Add-End]
 	float4 InGBufferVelocity,
 	float CustomNativeDepth,
 	uint CustomStencil,
@@ -1028,6 +1050,10 @@ FGBufferData DecodeGBufferData(
 
 	GBuffer.Velocity = !(GBuffer.SelectiveOutputMask & SKIP_VELOCITY_MASK) ? InGBufferVelocity : 0;
 
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	GBuffer.SketchData = InGBufferG;
+	//[Sketch-Pipeline][Add-End]
+	
 	return GBuffer;
 }
 
@@ -1078,7 +1104,15 @@ uint ExtractSubsurfaceProfileInt(FGBufferData BufferData)
 
 		float SceneDepth = CalcSceneDepth(PixelPos);
 
-		return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromPixelPos(PixelPos));
+		//[Sketch-Pipeline][Add-Begin]修改GBuffer
+		float4 GBufferG = SceneTexturesStruct.GBufferGTexture.Load(int3(PixelPos, 0));
+		//[Sketch-Pipeline][Add-End]
+	
+		//return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromPixelPos(PixelPos));
+		//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+		return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferG, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromPixelPos(PixelPos));
+		//[Sketch-Pipeline][Modify-End]
+	
 	#endif
 	}
 
@@ -1109,6 +1143,11 @@ FGBufferData GetGBufferDataFromSceneTextures(float2 UV, bool bGetNormalizedNorma
 	float4 GBufferD = GBufferDTexture.SampleLevel(GBufferDTextureSampler, UV, 0);
 	float4 GBufferE = GBufferETexture.SampleLevel(GBufferETextureSampler, UV, 0);
 	float4 GBufferF = GBufferFTexture.SampleLevel(GBufferFTextureSampler, UV, 0);
+
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	float4 GBufferG = GBufferGTexture.SampleLevel(GBufferGTextureSampler, UV, 0);
+	//[Sketch-Pipeline][Add-End]
+	
 	float4 GBufferVelocity = GBufferVelocityTexture.SampleLevel(GBufferVelocityTextureSampler, UV, 0);
 
 	uint CustomStencil = 0;
@@ -1118,7 +1157,10 @@ FGBufferData GetGBufferDataFromSceneTextures(float2 UV, bool bGetNormalizedNorma
 
 	float SceneDepth = ConvertFromDeviceZ(DeviceZ);
 
-	return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromSceneColorUV(UV));
+	//return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromSceneColorUV(UV));
+	//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+	return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferG, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromPixelPos(PixelPos));
+	//[Sketch-Pipeline][Modify-End]
 #endif
 }
 
@@ -1164,9 +1206,16 @@ FGBufferData GetGBufferData(float2 UV, bool bGetNormalizedNormal = true)
 		float4 GBufferVelocity = 0;
 	#endif
 
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	float4 GBufferG = Texture2DSampleLevel(SceneTexturesStruct.GBufferGTexture, SceneTexturesStruct_GBufferGTextureSampler, UV, 0);
+	//[Sketch-Pipeline][Add-End]
+	
 	float SceneDepth = CalcSceneDepth(UV);
 	
-	return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromSceneColorUV(UV));
+	//return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromSceneColorUV(UV));
+	//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+	return DecodeGBufferData(GBufferA, GBufferB, GBufferC, GBufferD, GBufferE, GBufferF, GBufferG, GBufferVelocity, CustomNativeDepth, CustomStencil, SceneDepth, bGetNormalizedNormal, CheckerFromPixelPos(PixelPos));
+	//[Sketch-Pipeline][Modify-End]
 #endif
 }
 

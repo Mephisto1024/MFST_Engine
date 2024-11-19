@@ -776,6 +776,10 @@ void FPixelShaderInOut_MainPS(
 	
 	// PreShadowFactor
 	float4 OutGBufferE = 0;
+
+	//[Sketch-Pipeline][Add-Begin]修改GBuffer
+	float4 OutGBufferG = 0;
+	//[Sketch-Pipeline][Add-End]
 	
 	FMaterialPixelParameters MaterialParameters = GetMaterialPixelParameters(Interpolants, In.SvPosition);
 	FPixelMaterialInputs PixelMaterialInputs;
@@ -1967,9 +1971,16 @@ void FPixelShaderInOut_MainPS(
 			float4 OutGBufferA = 0;
 			float4 OutGBufferB = 0;
 			float4 OutGBufferC = 0;
+			//[Sketch-Pipeline][Add-Begin]修改GBuffer
+			float4 OutGBufferG = 0;
+			//[Sketch-Pipeline][Add-End]
+			
+			//EncodeGBuffer(GBuffer, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD, OutGBufferE, OutVelocity, QuantizationBias);
 
-			EncodeGBuffer(GBuffer, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD, OutGBufferE, OutVelocity, QuantizationBias);
-
+			//[Sketch-Pipeline][Modify-Begin]修改GBuffer
+			EncodeGBuffer(GBuffer, OutGBufferA, OutGBufferB, OutGBufferC, OutGBufferD, OutGBufferE, OutGBufferG, OutVelocity, QuantizationBias);
+			//[Sketch-Pipeline][Modify-End]
+			
 			Out.MRT[1] = OutGBufferA;
 			Out.MRT[2] = OutGBufferB;
 			Out.MRT[3] = OutGBufferC;
@@ -1983,6 +1994,10 @@ void FPixelShaderInOut_MainPS(
 			#if GBUFFER_HAS_PRECSHADOWFACTOR
 				Out.MRT[GBUFFER_HAS_VELOCITY ? 6 : 5] = OutGBufferE;
 			#endif
+
+			//[Sketch-Pipeline][Add-Begin]修改GBuffer
+			Out.MRT[6] = OutGBufferG;
+			//[Sketch-Pipeline][Add-End]
 		}
 		#endif
 

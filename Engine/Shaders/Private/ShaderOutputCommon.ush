@@ -44,6 +44,12 @@
 	#define PIXELSHADEROUTPUT_MRT7 0
 #endif
 
+//[Sketch-Pipeline][Add-Begin]修改GBuffer
+#ifndef PIXELSHADEROUTPUT_MRT8
+	#define PIXELSHADEROUTPUT_MRT8 0
+#endif
+//[Sketch-Pipeline][Add-End]
+
 #ifndef PIXELSHADEROUTPUT_COVERAGE
 	#define PIXELSHADEROUTPUT_COVERAGE 0
 #endif

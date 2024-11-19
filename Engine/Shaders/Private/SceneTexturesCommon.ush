@@ -28,6 +28,11 @@
 #define SceneTexturesStruct_GBufferDTextureSampler SceneTexturesStruct.PointClampSampler
 #define SceneTexturesStruct_GBufferETextureSampler SceneTexturesStruct.PointClampSampler
 #define SceneTexturesStruct_GBufferFTextureSampler SceneTexturesStruct.PointClampSampler
+
+//[Sketch-Pipeline][Add-Begin]修改GBuffer
+#define SceneTexturesStruct_GBufferGTextureSampler SceneTexturesStruct.PointClampSampler
+//[Sketch-Pipeline][Add-End]
+
 #define SceneTexturesStruct_GBufferVelocityTextureSampler SceneTexturesStruct.PointClampSampler
 #define SceneTexturesStruct_ScreenSpaceAOTextureSampler SceneTexturesStruct.PointClampSampler
 

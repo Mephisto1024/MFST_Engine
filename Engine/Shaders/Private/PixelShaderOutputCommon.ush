@@ -98,6 +98,12 @@ void MainPS
 		, out float4 OutTarget7 : SV_Target7
 #endif
 
+//[Sketch-Pipeline][Add-Begin]修改GBuffer
+#if PIXELSHADEROUTPUT_MRT8
+		, out float4 OutTarget8 : SV_Target8
+#endif
+//[Sketch-Pipeline][Add-End]
+
 #endif // STRATA_OPAQUE_DEFERRED
 
 		// todo: if we are not inside a volumetric decal we could use OPTIONAL_OutDepthConservative for better performance, this would require a shader permutation
@@ -210,7 +216,13 @@ void MainPS
 #if PIXELSHADEROUTPUT_MRT7
 	OutTarget7 = PixelShaderOut.MRT[7];
 #endif
-
+	
+//[Sketch-Pipeline][Add-Begin]修改GBuffer
+#if PIXELSHADEROUTPUT_MRT8
+	OutTarget8 = PixelShaderOut.MRT[8];
+#endif
+//[Sketch-Pipeline][Add-End]
+	
 #endif // STRATA_OPAQUE_DEFERRED
 
 #if PIXELSHADEROUTPUT_COVERAGE || PIXELSHADEROUTPUT_A2C
