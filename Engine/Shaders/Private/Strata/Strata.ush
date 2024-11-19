@@ -4,7 +4,7 @@
 
 // Sanity guard.
 #ifndef STRATA_ENABLED
-	#define STRATA_ENABLED 1
+	#define STRATA_ENABLED 0
 	#error STRATA_ENABLED needs to be defined
 #endif
 
