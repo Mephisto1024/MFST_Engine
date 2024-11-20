@@ -2934,6 +2934,22 @@ static void LoadEngineTexture(TObjectPtr<TextureType>& InOutTexture, const TCHAR
 	}
 }
 
+//[Sketch-Pipeline][Add-Begin]加载素描纹理
+static void LoadHatchLevelTextures(TArray<TObjectPtr<UTexture2D>> &HatchLevelTextures, int16 Num)
+{
+	HatchLevelTextures.Empty();
+	for (int16 i = 0; i < Num; i++)
+	{
+		FString name = "hatch_" + FString::FromInt(i);
+		FString path = "/Engine/SketchResources/Textures/" + name + "." + name;
+
+		TObjectPtr<UTexture2D> tex2d = nullptr;
+		LoadEngineTexture(tex2d, *path);
+		HatchLevelTextures.Add(tex2d);
+	}
+}
+//[Sketch-Pipeline][Add-End]
+
 static void LoadCustomTimeStep(UEngine* Engine)
 {
 	if (Engine->CustomTimeStepClassName.IsValid())
