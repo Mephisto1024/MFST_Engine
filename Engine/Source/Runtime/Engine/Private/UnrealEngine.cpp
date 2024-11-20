@@ -3155,6 +3155,9 @@ void UEngine::InitializeObjectReferences()
 	LoadEngineTexture(LightMapDensityTexture, *LightMapDensityTextureName.ToString());
 	ConditionallyLoadPreIntegratedSkinBRDFTexture();
 
+	//[Sketch-Pipeline][Add-Begin]加载素描纹理
+	LoadHatchLevelTextures(HatchLevelTextures, 6);
+	//[Sketch-Pipeline][Add-End]
 #if WITH_EDITOR
 	// Avoid breaking some engine textures that might be cached very early (i.e. BlueNoise)
 	FTextureCompilingManager::Get().FinishAllCompilation();
