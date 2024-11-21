@@ -1,0 +1,107 @@
+#include "/Engine/Private/Common.ush"
+#include "/Engine/Private/ScreenPass.ush"
+
+#define HATCHTEXTURERES		  256.
+#define HATCHTSHADOWDISTANCE 0.30
+
+Texture2D InputSceneColorTexture;
+Texture2D InputBaseColorTexture;
+Texture2D InputSceneDepthTexture;
+Texture2D InputShadowMaskTexture;
+Texture2D InputSketchDataTexture;
+
+Texture2D InputHatchTexture0;
+Texture2D InputHatchTexture1;
+Texture2D InputHatchTexture2;
+Texture2D InputHatchTexture3;
+Texture2D InputHatchTexture4;
+Texture2D InputHatchTexture5;
+
+float GrayScale(float3 color)
+{
+	return 0.299 * color.x + 0.578 * color.y + 0.114 * color.z;
+}
+
+float4 SampleHatch(float hatchFactor, float2 pos)
+{
+	fixed3 hatchWeights0 = fixed3(0, 0, 0);
+	fixed3 hatchWeights1 = fixed3(0, 0, 0);
+
+	hatchFactor *= 7.0;
+	if (hatchFactor > 6.0) {
+		// Pure white, do nothing
+	} else if (hatchFactor > 5.0) {
+		hatchWeights0.x = hatchFactor - 5.0;
+	} else if (hatchFactor > 4.0) {
+		hatchWeights0.x = hatchFactor - 4.0;
+		hatchWeights0.y = 1.0 - hatchWeights0.x;
+	} else if (hatchFactor > 3.0) {
+		hatchWeights0.y = hatchFactor - 3.0;
+		hatchWeights0.z = 1.0 - hatchWeights0.y;
+	} else if (hatchFactor > 2.0) {
+		hatchWeights0.z = hatchFactor - 2.0;
+		hatchWeights1.x = 1.0 - hatchWeights0.z;
+	} else if (hatchFactor > 1.0) {
+		hatchWeights1.x = hatchFactor - 1.0;
+		hatchWeights1.y = 1.0 - hatchWeights1.x;
+	} else {
+		hatchWeights1.y = hatchFactor;
+		hatchWeights1.z = 1.0 - hatchWeights1.y;
+	}
+
+	float2 uv = InputSketchDataTexture.Load(int3(pos, 0)).xy;
+	uv *= HATCHTEXTURERES;
+
+	fixed4 hatchTex0 = InputHatchTexture0.Load(int3(uv, 0)) * hatchWeights0.x;
+	fixed4 hatchTex1 = InputHatchTexture1.Load(int3(uv, 0)) * hatchWeights0.y;
+	fixed4 hatchTex2 = InputHatchTexture2.Load(int3(uv, 0)) * hatchWeights0.z;
+	fixed4 hatchTex3 = InputHatchTexture3.Load(int3(uv, 0)) * hatchWeights1.x;
+	fixed4 hatchTex4 = InputHatchTexture4.Load(int3(uv, 0)) * hatchWeights1.y;
+	fixed4 hatchTex5 = InputHatchTexture5.Load(int3(uv, 0)) * hatchWeights1.z;
+	fixed4 whiteColor = fixed4(1, 1, 1, 1) * (1 - hatchWeights0.x - hatchWeights0.y - hatchWeights0.z - 
+				hatchWeights1.x - hatchWeights1.y - hatchWeights1.z);
+	
+	return saturate(hatchTex0 + hatchTex1 + hatchTex2 + hatchTex3 + hatchTex4 + hatchTex5 + whiteColor);
+}
+
+float2 ShetchShadow(float2 pos)
+{
+	float shadowMask = InputShadowMaskTexture.Load(int3(pos, 0)).x;
+	float depth = InputSceneDepthTexture.Load(int3(pos, 0)).x;
+	float mask = InputSketchDataTexture.Load(int3(pos, 0)).w;
+	float3 sceneColor = InputSceneColorTexture.Load(int3(pos, 0)).xyz;
+	float3 baseColor = InputBaseColorTexture.Load(int3(pos, 0)).xyz;	
+	float grayScale = saturate(GrayScale(sceneColor) / GrayScale(baseColor));
+
+	float shade = SampleHatch(grayScale, pos).x;
+	float shadow = SampleHatch(shadowMask, pos).x;
+
+	shade *= mask;
+	shade += (1 - mask);
+
+	shadow = lerp(shadowMask, shadow, saturate(depth + HATCHTSHADOWDISTANCE));
+
+	return float2(shade, shadow);
+}
+
+float WriteHatch(float2 pos)
+{
+	float2 uv = InputSketchDataTexture.Load(int3(pos, 0)).xy;
+	uv *= HATCHTEXTURERES;
+
+	float3 baseColor = InputBaseColorTexture.Load(int3(pos, 0)).xyz;
+	float colorMixing = InputSketchDataTexture.Load(int3(pos, 0)).z;
+	float grayScale = saturate(GrayScale(baseColor));
+	float hatch = SampleHatch(grayScale, pos).x;
+	return lerp(0, hatch, colorMixing);
+}
+
+void MainPS(
+    float4 SvPosition : SV_Position,
+    out float4 OutColor : SV_Target0) 
+{
+	float2 pos = SvPosition.xy;
+	OutColor.w = InputSketchDataTexture.Load(int3(pos, 0)).w;
+	OutColor.z = WriteHatch(pos);
+	OutColor.xy = ShetchShadow(pos);
+}

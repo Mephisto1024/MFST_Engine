@@ -30,6 +30,10 @@
 #include "BasePassRendering.h"
 #include "TranslucentLighting.h"
 
+//[Sketch-Pipeline][Add-Begin]素描阴影处理
+#include "SketchRendering.h"
+//[Sketch-Pipeline][Add-End]
+
 // ENABLE_DEBUG_DISCARD_PROP is used to test the lighting code by allowing to discard lights to see how performance scales
 // It ought never to be enabled in a shipping build, and is probably only really useful when woring on the shading code.
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
@@ -1218,7 +1222,12 @@ FHairStrandsTransmittanceMaskData CreateDummyHairStrandsTransmittanceMaskData(FR
 
 void FDeferredShadingSceneRenderer::RenderLights(
 	FRDGBuilder& GraphBuilder,
-	FMinimalSceneTextures& SceneTextures,
+	//FMinimalSceneTextures& SceneTextures,
+
+	//[Sketch-Pipeline][Modify-Begin]素描阴影处理
+	FSceneTextures& SceneTextures,
+	//[Sketch-Pipeline][Modify-End]
+	
 	const FTranslucencyLightingVolumeTextures& TranslucencyLightingVolumeTextures,
 	FRDGTextureRef LightingChannelsTexture,
 	FSortedLightSetSceneInfo& SortedLightSet)
@@ -1448,6 +1457,12 @@ void FDeferredShadingSceneRenderer::RenderLights(
 				const bool bUseHairDeepShadow = bDrawShadows && bUseHairLighting && LightSceneProxy.CastsHairStrandsDeepShadow();
 				bool bUsedShadowMaskTexture = false;
 
+				//[Sketch-Pipeline][Add-Begin]素描阴影处理
+				const bool bUsedSketchShadowMaskTexture = bDrawShadows;
+				FRDGTextureRef ScreenNoShadowMask = bUsedSketchShadowMaskTexture ? GraphBuilder.CreateTexture(SceneTextures.Color.Target->Desc, TEXT("ScreenNoShadowMask")) : nullptr;
+				AddClearRenderTargetPass(GraphBuilder, ScreenNoShadowMask, FLinearColor::White);
+				//[Sketch-Pipeline][Add-End]
+				
 				bool bElideScreenShadowMask = false;
 
 				FScopeCycleCounter Context(LightSceneProxy.GetStatId());
@@ -1977,10 +1992,33 @@ void FDeferredShadingSceneRenderer::RenderLights(
 
 						RDG_EVENT_SCOPE_CONDITIONAL(GraphBuilder, ViewCount > 1, "View%d", ViewIndex);
 						SCOPED_GPU_MASK(GraphBuilder.RHICmdList, View.GPUMask);
-						RenderLight(GraphBuilder, Scene, View, SceneTextures, &LightSceneInfo, VirtualShadowMapId != INDEX_NONE ? nullptr : ScreenShadowMaskTexture, LightingChannelsTexture, false /*bRenderOverlap*/, true /*bCloudShadow*/, VirtualShadowMapArray.GetUniformBuffer(), ShadowSceneRenderer->VirtualShadowMapMaskBits, VirtualShadowMapId);
+						//RenderLight(GraphBuilder, Scene, View, SceneTextures, &LightSceneInfo, VirtualShadowMapId != INDEX_NONE ? nullptr : ScreenShadowMaskTexture, LightingChannelsTexture, false /*bRenderOverlap*/, true /*bCloudShadow*/, VirtualShadowMapArray.GetUniformBuffer(), ShadowSceneRenderer->VirtualShadowMapMaskBits, VirtualShadowMapId);
+
+						//[Sketch-Pipeline][Modify-Begin]素描阴影处理
+						RenderLight(GraphBuilder, Scene, View, SceneTextures, &LightSceneInfo, VirtualShadowMapId != INDEX_NONE ? nullptr : ScreenNoShadowMask, LightingChannelsTexture, false /*bRenderOverlap*/, true /*bCloudShadow*/, VirtualShadowMapArray.GetUniformBuffer(), ShadowSceneRenderer->VirtualShadowMapMaskBits, VirtualShadowMapId);
+						//[Sketch-Pipeline][Modify-End]
 					}
 				}
 
+				//[Sketch-Pipeline][Add-Begin]素描阴影处理
+				if (bUsedSketchShadowMaskTexture)
+				{
+					for (int32 ViewIndex = 0; ViewIndex < Views.Num(); ViewIndex++)
+					{
+						const FViewInfo& View = Views[ViewIndex];
+						AddSketchShadowPass(
+							GraphBuilder,
+							View.ShaderMap,
+							SceneTextures.Color.Target,
+							SceneTextures.Depth.Target,
+							SceneTextures.GBufferC,
+							SceneTextures.GBufferG,
+							ScreenShadowMaskTexture,
+							FRDGDrawTextureInfo());
+					}
+				}
+				//[Sketch-Pipeline][Add-End]
+				
 				if (bUseHairLighting)
 				{
 					for (FViewInfo& View : Views)
