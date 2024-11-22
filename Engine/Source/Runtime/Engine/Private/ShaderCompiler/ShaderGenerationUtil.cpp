@@ -1743,6 +1743,10 @@ static void DetermineUsedMaterialSlots(
 	if (Mat.MATERIAL_SHADINGMODEL_DEFAULT_LIT)
 	{
 		SetStandardGBufferSlots(Slots, bWriteEmissive, bHasTangent, bHasVelocity, bHasStaticLighting, bIsStrataMaterial);
+
+		//[Sketch-Pipeline][Add-Begin]修改GBuffer
+		Slots[GBS_SketchData] = bUseCustomData;
+		//[Sketch-Pipeline][Add-End]
 	}
 
 	if (Mat.MATERIAL_SHADINGMODEL_SUBSURFACE)
