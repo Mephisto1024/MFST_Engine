@@ -6963,7 +6963,7 @@ static bool IsPropertyActive_Internal(EMaterialProperty InProperty,
 			break;
 			//[Sketch-Pipeline][Add-Begin]添加光照模型
 		case MP_SketchShadowUVScale:
-			Active = ShadingModels.HasAnyShadingModel({ MSM_Sketch});
+			Active = ShadingModels.HasAnyShadingModel({ MSM_Sketch,MSM_DefaultLit});
 			break;
 
 		case MP_SketchColorMixing:
